@@ -1,5 +1,5 @@
 api_platform:
-    title: Products
+    title: Hello API Platform
     version: 1.0.0
     formats:
         jsonld: ['application/ld+json']
