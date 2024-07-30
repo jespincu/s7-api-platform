@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ManufacturerRepository::class)]
 #[ApiResource]
@@ -21,18 +22,22 @@ class Manufacturer
 
     /** The name of the Manufacturer */
     #[ORM\Column(length: 150)]
+    #[Assert\NotBlank]
     private ?string $name = '';
 
     /** The description of the Manufacturer */
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank]
     private ?string $description = '';
 
     /** The country code of the Manufacturer */
     #[ORM\Column(length: 3)]
+    #[Assert\NotBlank]
     private ?string $countryCode = '';
 
     /** The date that the Manufacturer was listed */
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull]
     private ?\DateTimeInterface $listedDate = null;
 
     /**
