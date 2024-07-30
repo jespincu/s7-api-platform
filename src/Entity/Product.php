@@ -4,6 +4,12 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Patch;
 use App\Repository\ProductRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,7 +19,22 @@ use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[
-    ApiResource,
+    ApiResource(
+        operations: [
+            new GetCollection(
+                paginationEnabled: true,
+                paginationItemsPerPage: 10,
+                paginationMaximumItemsPerPage: 20,
+                paginationClientEnabled: true,
+                paginationClientItemsPerPage: true
+            ),
+            new Get(),
+            new Post(), 
+            new Put(), 
+            new Patch(),
+            new Delete()
+        ]
+    ),
     ApiFilter(
         SearchFilter::class,
         properties: [
