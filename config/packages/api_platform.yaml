@@ -16,3 +16,11 @@ api_platform:
             rfc_7807_compliant_errors: true
     keep_legacy_inflector: false
     use_symfony_listeners: true
+    collection:
+        pagination:
+            enabled: false
+            page_parameter_name: _page
+            items_per_page_parameter_name: itemsPerPage
+            enabled_parameter_name: pagination #optional
+            partial_parameter_name: partial
+        
