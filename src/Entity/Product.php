@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ProductRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ApiResource]
@@ -19,17 +20,21 @@ class Product
 
     /** The MPN(manufacturer part number) of the Product */
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull]
     private ?string $mpn = null;
 
     /** The name of the Product */
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $name = '';
 
     /** The description of the Product */
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank]
     private ?string $description = '';
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull]
     private ?\DateTimeInterface $issueDate = null;
 
     /** The Manufacturer of the Product */
