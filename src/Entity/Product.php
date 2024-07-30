@@ -3,13 +3,33 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\ApiFilter;
 use App\Repository\ProductRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
-#[ApiResource]
+#[
+    ApiResource,
+    ApiFilter(
+        SearchFilter::class,
+        properties: [
+            'name' => SearchFilter::STRATEGY_PARTIAL,        
+            'description' => SearchFilter::STRATEGY_PARTIAL,       
+            'manufacturer.countryCode' => SearchFilter::STRATEGY_EXACT       
+        ]
+    ),
+    ApiFilter(
+        OrderFilter::class,
+        properties: [
+            'issueDate'     
+        ]
+    )
+        
+]
 class Product
 {
     /** The ID of the Product */
