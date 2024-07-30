@@ -19,15 +19,15 @@ class Manufacturer
 
     /** The name of the Manufacturer */
     #[ORM\Column(length: 150)]
-    private ?string $name = null;
+    private ?string $name = '';
 
     /** The description of the Manufacturer */
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $description = null;
+    private ?string $description = '';
 
     /** The country code of the Manufacturer */
     #[ORM\Column(length: 3)]
-    private ?string $countryCode = null;
+    private ?string $countryCode = '';
 
     /** The date that the Manufacturer was listed */
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -43,7 +43,7 @@ class Manufacturer
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(string $name)
     {
         $this->name = $name;
 
@@ -55,7 +55,7 @@ class Manufacturer
         return $this->description;
     }
 
-    public function setDescription(string $description): static
+    public function setDescription(string $description)
     {
         $this->description = $description;
 
@@ -67,7 +67,7 @@ class Manufacturer
         return $this->countryCode;
     }
 
-    public function setCountryCode(string $countryCode): static
+    public function setCountryCode(string $countryCode)
     {
         $this->countryCode = $countryCode;
 
@@ -79,7 +79,7 @@ class Manufacturer
         return $this->listedDate;
     }
 
-    public function setListedDate(\DateTimeInterface $listedDate): static
+    public function setListedDate(\DateTimeInterface $listedDate)
     {
         $this->listedDate = $listedDate;
 
