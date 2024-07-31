@@ -43,7 +43,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         properties: [
             'name' => SearchFilter::STRATEGY_PARTIAL,        
             'description' => SearchFilter::STRATEGY_PARTIAL,       
-            'manufacturer.countryCode' => SearchFilter::STRATEGY_EXACT       
+            'manufacturer.countryCode' => SearchFilter::STRATEGY_EXACT,       
+            'manufacturer.id' => SearchFilter::STRATEGY_EXACT       
         ]
     ),
     ApiFilter(
