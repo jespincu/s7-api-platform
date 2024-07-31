@@ -14,6 +14,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ManufacturerRepository::class)]
 #[ApiResource(
@@ -35,6 +36,7 @@ class Manufacturer
     /** The name of the Manufacturer */
     #[ORM\Column(length: 150)]
     #[Assert\NotBlank]
+    #[Groups(['product.read'])]
     private ?string $name = '';
 
     /** The description of the Manufacturer */
