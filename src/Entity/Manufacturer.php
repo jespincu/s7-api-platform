@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\ApiSubresource;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
@@ -23,7 +25,20 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Get(),
         new Post(), 
         new Put(), 
-        new Patch()]
+        new Patch()
+    ]
+)]
+#[ApiResource(
+    uriTemplate: '/manufacturers/{id}/products.{_format}',
+    uriVariables: [
+        'id' => new Link(
+            fromProperty: 'manufacturer',
+            fromClass: Product::class,
+        ),
+    ],
+    operations: [
+        new GetCollection(),
+    ],
 )]
 class Manufacturer
 {
@@ -58,6 +73,7 @@ class Manufacturer
      * @var Collection<int, Product>
      */
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'manufacturer', cascade: ['persist', 'remove'])]
+    #[ApiSubresource]
     private Collection $products;
 
     public function __construct()
