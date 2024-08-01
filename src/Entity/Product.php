@@ -26,8 +26,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         operations: [
             new GetCollection(
                 paginationEnabled: true,
-                paginationItemsPerPage: 10,
-                paginationMaximumItemsPerPage: 20,
+                paginationItemsPerPage: 5,
+                paginationMaximumItemsPerPage: 10,
                 paginationClientEnabled: true,
                 paginationClientItemsPerPage: true
             ),
@@ -88,7 +88,8 @@ class Product
 
     /** The Manufacturer of the Product */
     #[ORM\ManyToOne(targetEntity: Manufacturer::class, inversedBy: 'products')]
-    #[Groups(['product.read'])]
+    #[Assert\NotNull]
+    #[Groups(['product.read','product.write'])]
     private ?Manufacturer $manufacturer = null;
 
     public function getId(): ?int
