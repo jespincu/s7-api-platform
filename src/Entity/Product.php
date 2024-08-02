@@ -34,7 +34,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             ),
             new Get(security: 'is_granted("ROLE_ADMIN")'),
             new Post(security: 'is_granted("ROLE_ADMIN")'), 
-            new Put(security: 'is_granted("ROLE_ADMIN")'), 
+            new Put(security: 'is_granted("ROLE_USER") and object.getOwner() == user',
+                    securityMessage: 'A Product can only be updated by the owner'), 
             new Patch(security: 'is_granted("ROLE_ADMIN")'),
             new Delete(security: 'is_granted("ROLE_ADMIN")')
         ]
@@ -92,6 +93,10 @@ class Product
     #[Assert\NotNull]
     #[Groups(['product.read','product.write'])]
     private ?Manufacturer $manufacturer = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[Groups(['product.read','product.write'])]
+    private ?User $owner = null;
 
     public function getId(): ?int
     {
@@ -154,6 +159,18 @@ class Product
     public function setManufacturer(?Manufacturer $manufacturer): static
     {
         $this->manufacturer = $manufacturer;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }
