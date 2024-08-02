@@ -3,25 +3,49 @@
 namespace App\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
-
-use Nelmio\Alice\Loader\NativeLoader;
-use Nelmio\Alice\Fixtures\FixtureLoader;
+use App\Entity\ApiToken;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ProductsTest extends ApiTestCase
 {
     use RefreshDatabaseTrait;
 
-    protected static function getKernelClass(): string
-    {
-        // Return the fully qualified class name of your kernel class
-        return \App\Kernel::class;
-    }
+    private const API_TOKEN = '24234234234234';
 
+    private HttpClientInterface $client;
+
+    private EntityManagerInterface $entityManager;
+
+    protected function setUp(): void
+    {
+        $this->client = static::createClient();
+        $this->entityManager = static::$kernel->getContainer()->get('doctrine')->getManager();
+
+        //dd($this->client, $this->entityManager);
+        $user = new User();
+        $user->setEmail('test@mail.com');
+        $user->setPassword('secret');
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        $apiToken = new ApiToken();
+        $apiToken->setToken(self::API_TOKEN);
+        $apiToken->setUser($user);
+        $this->entityManager->persist($apiToken);
+        $this->entityManager->flush();
+
+    }
 
     public function testGetCollection(): void
     {
-        $response = static::createClient()->request('GET', '/api/products');
+        $response = $this->client->request('GET', '/api/products', [
+            'headers' => [
+                'x-api-token' => self::API_TOKEN,
+            ]
+        ]);
 
         $this->assertResponseIsSuccessful();
 
@@ -48,7 +72,11 @@ class ProductsTest extends ApiTestCase
 
     public function testPagination()
     {
-        $response = static::createClient()->request('GET', '/api/products?_page=2');
+        $response = $this->client->request('GET', '/api/products?_page=2',[
+            'headers' => [
+                'x-api-token' => self::API_TOKEN,
+            ]
+        ]);
 
         $this->assertJsonContains([
             'hydra:view' => [
@@ -64,9 +92,10 @@ class ProductsTest extends ApiTestCase
 
     public function testCreateProduct(): void
     {
-        static::createClient()->request('POST', '/api/products', [
+        $this->client->request('POST', '/api/products', [
             'headers' => [
                 'Content-Type' => 'application/ld+json; charset=utf-8',
+                'x-api-token' => self::API_TOKEN,
             ],
             'json' => [
                 'name'          => 'Test Product',
@@ -93,12 +122,11 @@ class ProductsTest extends ApiTestCase
 
     public function testUpdateProduct(): void
     {
-        $client = static::createClient();
-
-        $client->request('PUT', '/api/products/1',
+        $this->client->request('PUT', '/api/products/1',
             [
                 'headers' => [
                     'Content-Type' => 'application/ld+json',
+                    'x-api-token' => self::API_TOKEN,
                 ],
                 'json' => [
                     'mpn'          => 'Updated',
@@ -119,9 +147,10 @@ class ProductsTest extends ApiTestCase
 
     public function testCreateInvalidProduct(): void
     {
-        static::createClient()->request('POST', '/api/products', [
+        $this->client->request('POST', '/api/products', [
             'headers' => [
                     'Content-Type' => 'application/ld+json; charset=utf-8',
+                    'x-api-token' => self::API_TOKEN,
                 ],
             'json' => [
                 'mpn'          => '1234',
@@ -139,6 +168,27 @@ class ProductsTest extends ApiTestCase
             '@type'             => 'ConstraintViolationList',
             'hydra:title'       => 'An error occurred',
             'hydra:description' => 'manufacturer: This value should not be null.',
+        ]);
+    }
+
+    public function testInvalidToken(): void
+    {
+        $this->client->request('PUT', '/api/products/1',
+            [
+                'headers' => [
+                    'Content-Type' => 'application/ld+json',
+                    'x-api-token' => 'fake-token',
+                ],
+                'json' => [
+                    'mpn'          => 'Updated',
+                    'name'          => 'Updated Test Product',
+                    'description'   => 'Updated test product description',
+                    'issueDate'     => '2022-01-01T00:00:00+00:00',
+                ],
+            ]);
+        $this->assertResponseStatusCodeSame(401);
+        $this->assertJsonContains([
+            'message' => 'Invalid credentials.'
         ]);
     }
 }
